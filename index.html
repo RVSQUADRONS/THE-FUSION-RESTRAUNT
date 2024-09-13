@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Fusion Feast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            background-image: url('https://www.fusion6.com.au/wp-content/uploads/2021/04/Indian-Dishes-You-Need-to-Try.jpga');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+        }
+        h1, h2, h3 {
+            color: #fff; /* White text color for better visibility */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Shadow for readability */
+        }
+        .menu-category {
+            margin: 20px 0;
+        }
+        .menu-item {
+            margin: 10px 0;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 10px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .order-summary {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+            display: inline-block;
+        }
+        .menu-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .menu-container {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent background for readability */
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <h1>The Fusion Feast</h1>
+        <img src="https://www.fusion6.com.au/wp-content/uploads/2021/04/Indian-Dishes-You-Need-to-Try.jpga" alt="Indian Dishes" class="menu-image">
+        <h2>Treat Yourself Today --- Order And Savor The Flavor!!</h2>
+        <h3>Welcome To THE FUSION FEAST !! :)</h3>
+
+        <div id="menu">
+            <div id="category-menu">
+                <h3>Please choose a category:</h3>
+                <select id="category-select" class="button">
+                    <option value="">--Select Category--</option>
+                    <option value="starters">Starters</option>
+                    <option value="main-course">Main Course</option>
+                    <option value="beverages">Beverages</option>
+                    <option value="desserts">Desserts</option>
+                </select>
+            </div>
+
+            <div id="items-list" class="hidden">
+                <h3>Menu Items</h3>
+                <div id="items"></div>
+                <label for="item-quantity">Quantity:</label>
+                <input type="number" id="item-quantity" min="1">
+                <button class="button" onclick="addToOrder()">Add to Order</button>
+                <button class="button" onclick="showOrderSummary()">Show Order Summary</button>
+            </div>
+        </div>
+
+        <div id="order-summary" class="order-summary hidden">
+            <h3>Order Summary</h3>
+            <div id="summary-content"></div>
+            <p id="total-amount">Total Amount: Rs0</p>
+        </div>
+    </div>
+
+    <script>
+        const menus = {
+            'starters': {
+                'Paneer pakoda 6pcs': ' ?? Rs50',
+                'French Fries Medium': ' ?? Rs40',
+                'French Fries large': ' ?? Rs60',
+                'Chicken Wings 4 pcs': ' ?? Rs50',
+                'Veg. Samosa 2 pcs': 'Rs25',
+                'Khasta Kachori 2 pcs': 'Rs30'
+            },
+            'main-course': {
+                'Chicken Biryani': ' ???? Rs219',
+                'Butter Chicken With Naan': 'Rs189',
+                'Fried Rice With Butter Paneer': 'Rs149',
+                'Pizza': 'Rs99',
+                'Buttery dosa': 'Rs99'
+            },
+            'beverages': {
+                'Lemonade': ' ?? Rs25',
+                'Cold Coffee': ' ? Rs25',
+                'Soft Drink': ' ?? Rs50',
+                'Virgin Mojito': ' ?? Rs69',
+                'Milk Shake': ' ?? Rs30'
+            },
+            'desserts': {
+                'Classic Vanilla Ice-Cream': ' ?? Rs35',
+                'Chocolate Ice-Cream': ' ???? Rs50',
+                'Cheesecake': ' ?? Rs45',
+                'Gulab Jamun 2pcs': ' ?? Rs40',
+                'Choco Lava Cake': ' ?? Rs25'
+            }
+        };
+
+        let orderTotal = 0;
+        let orderSummary = {};
+
+        document.getElementById('category-select').addEventListener('change', function() {
+            const category = this.value;
+            const itemsList = document.getElementById('items-list');
+            const itemsContainer = document.getElementById('items');
+            itemsContainer.innerHTML = '';
+            if (category) {
+                itemsList.classList.remove('hidden');
+                const items = menus[category];
+                for (const item in items) {
+                    itemsContainer.innerHTML += `<div>
+                        <label>
+                            <input type="radio" name="item" value="${item}">
+                            ${item}: ${items[item]}
+                        </label>
+                    </div>`;
+                }
+            } else {
+                itemsList.classList.add('hidden');
+            }
+        });
+
+        function addToOrder() {
+            const selectedItem = document.querySelector('input[name="item"]:checked');
+            const quantity = document.getElementById('item-quantity').value;
+            if (selectedItem && quantity) {
+                const item = selectedItem.value;
+                const category = document.getElementById('category-select').value;
+                const priceText = menus[category][item];
+                const price = parseInt(priceText.match(/\d+/)[0]); // Extract price from text
+                const totalPrice = price * quantity;
+                orderTotal += totalPrice;
+                if (orderSummary[item]) {
+                    orderSummary[item] += parseInt(quantity);
+                } else {
+                    orderSummary[item] = parseInt(quantity);
+                }
+                alert(`Added ${quantity} ${item}(s) to your order.`);
+                document.getElementById('item-quantity').value = '';
+            } else {
+                alert('Please select an item and enter quantity.');
+            }
+        }
+
+        function showOrderSummary() {
+            const summaryContent = document.getElementById('summary-content');
+            summaryContent.innerHTML = '';
+            for (const item in orderSummary) {
+                const category = Object.keys(menus).find(cat => menus[cat][item] !== undefined);
+                const priceText = menus[category][item];
+                const price = priceText.match(/\d+/)[0]; // Extract price from text
+                summaryContent.innerHTML += `<div>${item}: ${orderSummary[item]} x Rs${price}</div>`;
+            }
+            document.getElementById('total-amount').textContent = `Total Amount: Rs${orderTotal}`;
+            document.getElementById('order-summary').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
